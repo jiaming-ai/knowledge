@@ -10,8 +10,8 @@
   <meta property="og:description" content="Ten questions to think through with Plato and Aristotle.">
   <meta property="og:image" content="https://jiaming.im/knowledge/assets/road.webp">
   <link rel="icon" href="./assets/mark.png">
-  <link rel="stylesheet" href="./style.css?v=2">
-  <script type="module" src="./reader.js?v=2"></script>
+  <link rel="stylesheet" href="./style.css?v=3">
+  <script type="module" src="./reader.js?v=3"></script>
 </head>
 <body>
 <div id="app" hidden>
@@ -28,10 +28,13 @@
         <button id="contents" type="button" aria-haspopup="dialog"><span class="menu-icon" aria-hidden="true">☰</span><span id="contents-label">Contents</span></button>
       </nav>
     </div>
+    <div class="running-head">
+      <span id="author-title"></span>
+      <span id="phase-count" role="status"></span>
+    </div>
   </header>
   <main id="book">
     <section class="leaf" id="leaf" aria-labelledby="heading">
-      <div class="running-head"><span id="author-title"></span><span id="phase-count"></span></div>
       <div id="page"></div>
     </section>
   </main>

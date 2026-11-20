@@ -1,4 +1,4 @@
-import { books, inquiries } from './content.js?v=2';
+import { books, inquiries } from './content.js?v=3';
 
 const $ = id => document.getElementById(id);
 const last = inquiries.length * 2;
@@ -8,7 +8,7 @@ function load() {
   let data;
   try { data = JSON.parse(localStorage.getItem(storageKey)); } catch {}
   if (!data || typeof data !== 'object' || Array.isArray(data)) data = {};
-  for (const field of ['choices', 'notes']) {
+  for (const field of ['choices', 'notes', 'responses']) {
     if (!data[field] || typeof data[field] !== 'object' || Array.isArray(data[field])) data[field] = {};
   }
   if (!Array.isArray(data.earlyNotes)) data.earlyNotes = Object.keys(data.notes);
@@ -59,19 +59,33 @@ function navigate(n, l = lang) {
 
 function question(q) {
   const c = q[lang], book = books[q.book];
+  const selected = saved.responses[questionIndex()];
+  const answers = c.options.map((option, n) =>
+    `<li><button type="button" data-option="${n}" aria-pressed="${selected === n}">${option}</button></li>`
+  );
   return `<div class="question-spread">
     <div><h1 id="heading" tabindex="-1">${titleHTML(c.title)}</h1>
-    <p class="story">${c.scene}</p></div>
+    <p class="story">${c.scene}</p>
+    <ul class="answers" aria-label="${t('Possible answers','可以考虑的回答')}">${answers.join('')}</ul></div>
     <figure class="plate"><img src="./assets/${book.art}.webp" width="1160" height="773" alt="${esc(book[lang][4])}"></figure>
   </div>`;
+}
+
+function passageHTML(paragraph) {
+  return italic(paragraph).replace(/\[\[([^|\]]+)\|([^\]]+)\]\]/g, (_, greek, latin) => {
+    const term = `<span lang="grc">${greek}</span>`;
+    const transliteration = `<i lang="grc-Latn">${latin}</i>`;
+    return t(`(${term}, ${transliteration})`, `（${term}，${transliteration}）`);
+  });
 }
 
 function discussion(q) {
   const c = q[lang];
   const links = q.sources.map(([label, url]) => `<a href="${url}" target="_blank" rel="noopener">${label} ↗</a>`);
+  links.push(`<a href="${q.greekSource}" target="_blank" rel="noopener">${t('Greek text','希腊原文')} ↗</a>`);
   return `<article class="essay">
     <h1 id="heading" tabindex="-1">${c.heading}</h1>
-    ${c.reading.map(p => `<p>${italic(p)}</p>`).join('')}
+    ${c.reading.map(p => `<p>${passageHTML(p)}</p>`).join('')}
     <div class="sources">${books[q.book][lang][0]} · ${links.join(' · ')}</div>
   </article>`;
 }
@@ -111,8 +125,10 @@ function render(direction = 0, focus = false) {
   $('write').title = t('Write a note (W)','写札记（W）');
   $('next').title = t('Next page (→)','下一页（→）');
   $('back').title = t('Previous page (←)','上一页（←）');
-  $('author-title').textContent = end ? t('Afterword','尾声') : book[2] + ' · ' + book[0];
-  $('phase-count').textContent = end ? '' : (read ? t('Reading','细读') : t('Question','问题')) + '  ' + pad(i + 1) + ' / ' + pad(inquiries.length);
+  const phase = read ? t('Reading','细读') : t('Question','问题');
+  $('author-title').textContent = end ? t('Afterword','尾声') : [book[2], book[0], phase].join(' · ');
+  $('phase-count').textContent = pad(pos + 1) + ' / ' + pad(last + 1);
+  $('phase-count').setAttribute('aria-label', t(`Page ${pos + 1} of ${last + 1}`, `第 ${pos + 1} 页，共 ${last + 1} 页`));
   $('leaf').className = 'leaf ' + (end ? 'closing' : read ? 'reading' : 'question');
   $('page').innerHTML = end ? afterword() : read ? discussion(q) : question(q);
   $('page').firstElementChild.classList.add(direction < 0 ? 'turn-back' : direction > 0 ? 'turn-next' : 'initial');
@@ -142,14 +158,17 @@ function notebook() {
   for (let i = 0; i <= inquiries.length; i++) {
     const text = noteAt(i), choice = saved.choices[i], q = inquiries[i];
     const oldChoice = q && (choice === 0 || choice === 1);
-    if (!text && !oldChoice) continue;
-    const oldTitle = q && (oldChoice || saved.earlyNotes.includes(String(i)));
+    const selected = saved.responses[i];
+    const response = q && Number.isInteger(selected) ? q[lang].options[selected] : null;
+    if (!text && !oldChoice && !response) continue;
+    const oldTitle = q && !response && (oldChoice || saved.earlyNotes.includes(String(i)));
     const title = q ? clean(oldTitle ? q.previous[lang][0] : q[lang].title) : t('Closing reflection','合卷札记');
     rows.push(`<button class="note-link" data-edit="${i}"><span>${title}</span>
       ${oldChoice ? `<small>${t('Earlier choice · ','旧版选择 · ')}${q.previous[lang][choice+1]}</small>` : ''}
+      ${response ? `<small>${t('Current answer · ','本次选择 · ')}${response}</small>` : ''}
       ${text ? `<span class="excerpt">${esc(text)}</span>` : ''}</button>`);
   }
-  return rows.length ? rows.join('') : `<p class="panel-description">${t('Use Write on any page to keep a thought here.','阅读时点顶栏的「写札记」，即可在这里重读自己的想法。')}</p>`;
+  return rows.length ? rows.join('') : `<p class="panel-description">${t('Select an answer or use Write to keep a thought here.','可以选一个回答，也可以点「写札记」记下自己的想法。')}</p>`;
 }
 
 function panel(type, index = noteIndex()) {
@@ -184,6 +203,18 @@ $('next').onclick = () => navigate(pos + 1);
 $('write').onclick = () => panel('note');
 $('contents').onclick = () => panel('contents');
 $('close').onclick = () => $('panel').close();
+$('page').addEventListener('click', e => {
+  const button = e.target.closest('button[data-option]');
+  if (!button) return;
+  const i = questionIndex(), option = Number(button.dataset.option);
+  save(data => {
+    if (data.responses[i] === option) delete data.responses[i];
+    else data.responses[i] = option;
+  });
+  for (const item of $('page').querySelectorAll('button[data-option]')) {
+    item.setAttribute('aria-pressed', String(Number(item.dataset.option) === saved.responses[i]));
+  }
+});
 $('panel').addEventListener('click', e => {
   if (e.target === $('panel')) {
     const r = $('panel').getBoundingClientRect();
@@ -217,7 +248,7 @@ document.addEventListener('keydown', e => {
 
 let start = null;
 $('leaf').addEventListener('touchstart', e => {
-  start = e.touches.length === 1 && !e.target.closest('button,a,textarea,input,summary')
+  start = e.touches.length === 1 && !e.target.closest('button:not([data-option]),a,textarea,input,summary')
     ? [e.touches[0].clientX, e.touches[0].clientY] : null;
 }, {passive:true});
 $('leaf').addEventListener('touchcancel', () => start = null, {passive:true});
@@ -227,8 +258,11 @@ $('leaf').addEventListener('touchend', e => {
   start = null;
   if (e.touches.length || window.getSelection()?.toString()) return;
   const dx = e.changedTouches[0].clientX - x, dy = e.changedTouches[0].clientY - y;
-  if (Math.abs(dx) > 48 && Math.abs(dx) > 1.5 * Math.abs(dy)) navigate(pos + (dx < 0 ? 1 : -1));
-}, {passive:true});
+  if (Math.abs(dx) > 48 && Math.abs(dx) > 1.5 * Math.abs(dy)) {
+    if (e.cancelable) e.preventDefault();
+    navigate(pos + (dx < 0 ? 1 : -1));
+  }
+}, {passive:false});
 
 window.addEventListener('hashchange', () => {
   if ($('panel').open) $('panel').close();

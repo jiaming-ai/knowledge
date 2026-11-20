@@ -2,7 +2,7 @@
 
 [Read in English](https://jiaming.im/knowledge/#en/1) · [中文阅读](https://jiaming.im/knowledge/#zh/1)
 
-Ten questions lead into ten close readings, from the road to Larissa to the starting points of proof. Each question has a page of its own. Turn the page to follow a passage through its examples, inferences and unresolved difficulty. A closing reflection returns to the road with a third guide.
+Ten questions lead into ten close readings, from the road to Larissa to the starting points of proof. Each question has a page of its own with a short case and two bulleted answers. Choose one to keep in your notebook or turn the page directly. Turn the page to follow a passage through its examples, inferences and unresolved difficulty. A closing reflection returns to the road with a third guide.
 
 Use **Back (←)**, **Next (→)** and **Write (W)** in the top bar. Swipe horizontally to turn pages on a phone and scroll vertically through longer readings. Contents includes the chapter index, notebook and language switch.
 
@@ -13,7 +13,7 @@ Use **Back (←)**, **Next (→)** and **Write (W)** in the top bar. Swipe horiz
 | Plato, *Republic* | V 475d–480a, VI 509d–511e | Beauty itself, the divided line, and the assumptions of a proof |
 | Aristotle, *Posterior Analytics* | II.1–2, II.8, I.2–3, II.19 | Causes, regress, and the acquisition of first principles |
 
-Each discussion links to a free English translation. The introductory cases are editorial adaptations. Each reading reconstructs an argument and locates it in the work. The four book illustrations are contemporary AI-generated engravings.
+Each discussion introduces the original Greek terms alongside a transliteration and a contextual translation. Passage links lead to both a free English translation and the Greek text. The introductory cases are editorial adaptations. Each reading reconstructs an argument and locates it in the work. The four book illustrations are contemporary AI-generated engravings.
 
 ## Run locally
 
@@ -30,6 +30,6 @@ The URL identifies the language and page. A visit without a page link restores t
 
 ## Credits
 
-The code is available under the MIT license. Crimson Text and Noto Serif CJK are distributed under the SIL Open Font License. The licenses accompany the font subsets in `assets/fonts/`.
+The code is available under the MIT license. Crimson Text, Noto Serif CJK and the Greek subset derived from Gentium Plus are distributed under the SIL Open Font License. The licenses accompany the font subsets in `assets/fonts/`.
 
 Plato passages link to David Horan’s translations at the [Platonic Foundation](https://www.platonicfoundation.org/translation/). Aristotle passages link to G. R. G. Mure’s translation at the [Internet Classics Archive](https://classics.mit.edu/Aristotle/posterior.html).
