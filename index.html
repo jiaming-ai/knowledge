@@ -10,8 +10,8 @@
   <meta property="og:description" content="Ten questions to think through with Plato and Aristotle.">
   <meta property="og:image" content="https://jiaming.im/knowledge/assets/road.webp">
   <link rel="icon" href="./assets/mark.png">
-  <link rel="stylesheet" href="./style.css">
-  <script type="module" src="./reader.js"></script>
+  <link rel="stylesheet" href="./style.css?v=2">
+  <script type="module" src="./reader.js?v=2"></script>
 </head>
 <body>
 <div id="app" hidden>
@@ -22,22 +22,20 @@
         <span class="name">Aporia</span><span class="brand-rule"></span><span class="brand-sub" id="brand-sub"></span>
       </a>
       <nav class="tools" id="tools" aria-label="Reader tools">
-        <button id="contents" type="button"><span class="icon i-list" aria-hidden="true"></span><span id="contents-label"></span></button>
-        <button id="notebook" type="button"><span class="icon i-book" aria-hidden="true"></span><span id="notebook-label"></span></button>
-        <span class="tool-rule"></span><button id="language" type="button"></button>
+        <button id="back" type="button" aria-keyshortcuts="ArrowLeft"><span id="back-label">Back</span><kbd aria-hidden="true">←</kbd></button>
+        <button id="next" type="button" aria-keyshortcuts="ArrowRight"><span id="next-label">Next</span><kbd aria-hidden="true">→</kbd></button>
+        <button id="write" type="button" aria-keyshortcuts="w"><span id="write-label">Write</span><kbd aria-hidden="true">W</kbd></button>
+        <button id="contents" type="button" aria-haspopup="dialog"><span class="menu-icon" aria-hidden="true">☰</span><span id="contents-label">Contents</span></button>
       </nav>
     </div>
   </header>
   <main id="book">
     <section class="leaf" id="leaf" aria-labelledby="heading">
-      <div class="running-head"><span class="book-info"><b id="book-number"></b><i></i><span id="author-title"></span></span><span class="phase-count" id="phase-count"></span></div>
+      <div class="running-head"><span id="author-title"></span><span id="phase-count"></span></div>
       <div id="page"></div>
     </section>
-    <nav class="path" id="path" aria-label="Reading path"></nav>
-    <footer class="foot"><span id="edition"></span><span class="folio" id="folio"></span><span id="key-hint"></span></footer>
   </main>
   <dialog id="panel" aria-labelledby="panel-title"><div class="panel-inner"><header class="panel-head"><h2 id="panel-title"></h2><button id="close" type="button" aria-label="Close">×</button></header><div id="panel-body"></div></div></dialog>
-  <div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 </div>
 <noscript><main><h1>Aporia · 知识之问</h1><p>Two guides point to the same road. One knows it, the other guesses. If both lead you home, did both know the way?</p><p>启用 JavaScript 即可翻阅双语读本、记录想法。 Enable JavaScript to turn the pages and keep notes.</p><a href="https://www.platonicfoundation.org/translation/meno/">Read Plato’s Meno</a></main></noscript>
 </body></html>
